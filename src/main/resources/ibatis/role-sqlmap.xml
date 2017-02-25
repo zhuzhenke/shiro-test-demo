@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Role">
+    <!-- Alias Map Defined -->
+    <typeAlias alias="RoleQuery" type="com.shiro.query.RoleQuery"/>
+    <typeAlias alias="Role" type="com.shiro.pojo.Role"/>
+    <resultMap id="role" class="Role">
+        <result property="id" column="id"/>
+        <result property="role" column="role"/>
+        <result property="description" column="description"/>
+        <result property="enableStatus" column="enable_status"/>
+        <result property="modified" column="modified"/>
+    </resultMap>
+
+    <!-- 根据主键查询 -->
+    <select id="getRoleByKey" resultMap="role" parameterClass="hashmap">
+        SELECT id , role , description , enable_status , modified FROM role
+        WHERE
+        id=#id#
+    </select>
+    <select id="getRolesByKeys" resultMap="role" parameterClass="hashMap">
+        SELECT id , role , description , enable_status , modified FROM role
+        WHERE
+        id in
+        <iterate conjunction="," open="(" close=")" property="keys">
+            #keys[]#
+        </iterate>
+    </select>
+
+    <!-- 根据主键删除 -->
+    <delete id="deleteByKey" parameterClass="hashMap">
+        DELETE FROM role
+        WHERE
+        id=#id#
+    </delete>
+
+    <delete id="deleteByKeys">
+        DELETE FROM role
+        WHERE
+        id in
+        <iterate conjunction="," open="(" close=")" property="keys">
+            #keys[]#
+        </iterate>
+    </delete>
+
+    <!-- 根据主键更新 -->
+    <update id="updateRoleByKey" parameterClass="Role">
+        UPDATE role
+        <dynamic prepend="SET">
+            <isNotNull prepend="," property="id">
+                id = #id#
+            </isNotNull>
+            <isNotNull prepend="," property="role">
+                role = #role#
+            </isNotNull>
+            <isNotNull prepend="," property="description">
+                description = substring(#description#,1,128)
+            </isNotNull>
+            <isNotNull prepend="," property="enableStatus">
+                enable_status = #enableStatus#
+            </isNotNull>
+            <isNotNull prepend="," property="modified">
+                modified = #modified#
+            </isNotNull>
+        </dynamic>
+        WHERE
+        id=#id#
+    </update>
+
+    <insert id="insertRole" parameterClass="Role">
+        INSERT INTO role
+        <dynamic prepend="(" close=")">
+            <isNotEmpty prepend="," property="id">
+                id
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="role">
+                role
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="description">
+                description
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="enableStatus">
+                enable_status
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="modified">
+                modified
+            </isNotEmpty>
+        </dynamic>
+        VALUES
+        <dynamic prepend="(" close=")">
+            <isNotEmpty prepend="," property="id">
+                #id#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="role">
+                #role#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="description">
+                substring(#description#,1,128)
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="enableStatus">
+                #enableStatus#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="modified">
+                #modified#
+            </isNotEmpty>
+        </dynamic>
+    </insert>
+
+</sqlMap>

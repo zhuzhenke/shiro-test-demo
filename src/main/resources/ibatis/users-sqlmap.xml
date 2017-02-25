@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="Users">
+    <!-- Alias Map Defined -->
+    <typeAlias alias="UsersQuery" type="com.shiro.query.UsersQuery"/>
+    <typeAlias alias="Users" type="com.shiro.pojo.Users"/>
+    <resultMap id="users" class="Users">
+        <result property="id" column="id"/>
+        <result property="userName" column="userName"/>
+        <result property="password" column="password"/>
+        <result property="roleId" column="role_id"/>
+    </resultMap>
+
+    <!-- 根据主键查询 -->
+    <select id="getUsersByKey" resultMap="users" parameterClass="hashmap">
+        SELECT id , userName , password , role_id FROM users
+        WHERE
+        id=#id#
+    </select>
+    <!-- 根据主键查询 -->
+    <select id="getUsersByUserName" resultMap="users" parameterClass="hashmap">
+        SELECT id , userName , password , role_id FROM users
+        WHERE
+        userName=#userName#
+    </select>
+    <select id="getUserssByKeys" resultMap="users" parameterClass="hashMap">
+        SELECT id , userName , password , role_id FROM users
+        WHERE
+        id in
+        <iterate conjunction="," open="(" close=")" property="keys">
+            #keys[]#
+        </iterate>
+    </select>
+
+    <!-- 根据主键删除 -->
+    <delete id="deleteByKey" parameterClass="hashMap">
+        DELETE FROM users
+        WHERE
+        id=#id#
+    </delete>
+
+    <delete id="deleteByKeys">
+        DELETE FROM users
+        WHERE
+        id in
+        <iterate conjunction="," open="(" close=")" property="keys">
+            #keys[]#
+        </iterate>
+    </delete>
+
+    <!-- 根据主键更新 -->
+    <update id="updateUsersByKey" parameterClass="Users">
+        UPDATE users
+        <dynamic prepend="SET">
+            <isNotNull prepend="," property="id">
+                id = #id#
+            </isNotNull>
+            <isNotNull prepend="," property="userName">
+                userName = #userName#
+            </isNotNull>
+            <isNotNull prepend="," property="password">
+                password = #password#
+            </isNotNull>
+            <isNotNull prepend="," property="roleId">
+                role_id = #roleId#
+            </isNotNull>
+        </dynamic>
+        WHERE
+        id=#id#
+    </update>
+
+    <insert id="insertUsers" parameterClass="Users">
+        INSERT INTO users
+        <dynamic prepend="(" close=")">
+            <isNotEmpty prepend="," property="id">
+                id
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="userName">
+                userName
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="password">
+                password
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="roleId">
+                role_id
+            </isNotEmpty>
+        </dynamic>
+        VALUES
+        <dynamic prepend="(" close=")">
+            <isNotEmpty prepend="," property="id">
+                #id#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="userName">
+                #userName#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="password">
+                #password#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="roleId">
+                #roleId#
+            </isNotEmpty>
+        </dynamic>
+    </insert>
+
+</sqlMap>
